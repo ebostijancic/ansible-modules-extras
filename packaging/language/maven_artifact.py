@@ -202,7 +202,10 @@ class MavenDownloader:
             buildNumber = xml.xpath("/metadata/versioning/snapshot/buildNumber/text()")[0]
             return self._uri_for_artifact(artifact, artifact.version.replace("SNAPSHOT", timestamp + "-" + buildNumber))
         else:
-            return self._uri_for_artifact(artifact)
+            if artifact.version == "latest":
+                artifact.version = self._find_latest_version_available(artifact)
+
+            return self._uri_for_artifact(artifact, artifact.version)
 
     def _uri_for_artifact(self, artifact, version=None):
         if artifact.is_snapshot() and not version:
